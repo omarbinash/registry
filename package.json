@@ -9,6 +9,7 @@
   },
   "scripts": {
     "start": "node backend/server.js",
-    "heroku-postbuild": "cd baby-shower-clothes-registration && npm install && npm run build"
+    "heroku-postbuild": "npm --prefix ./baby-shower-clothes-registration install ./baby-shower-clothes-registration && npm --prefix ./baby-shower-clothes-registration run build"
   }
+  
 }
