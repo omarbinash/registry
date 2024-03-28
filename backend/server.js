@@ -1,7 +1,9 @@
+require('dotenv').config();
 const express = require('express');
 const bodyParser = require('body-parser');
 const cors = require('cors');
 const sql = require('mssql');
+const path = require('path'); // Import path module
 
 const app = express();
 const PORT = process.env.PORT || 3001;
@@ -11,10 +13,10 @@ app.use(bodyParser.json());
 
 // SQL Server connection configuration
 const config = {
-    user: 'admin', // Update with your RDS username
-    password: 'admin12345', // Update with your RDS password
-    server: 'database-1.cjgeuwuyypl5.us-east-1.rds.amazonaws.com', // Update with your RDS endpoint
-    database: 'registry', // Ensure this is your database name on RDS
+    user: process.env.DATABASE_USER, // Update with your RDS username
+    password: process.env.DATABASE_PASSWORD, // Update with your RDS password
+    server: process.env.DATABASE_SERVER, // Update with your RDS endpoint
+    database: process.env.DATABASE, // Ensure this is your database name on RDS
     options: {
         encrypt: true, // Required for Azure, might be optional for AWS depending on your setup
         trustServerCertificate: true // Change based on your SSL configuration
@@ -100,6 +102,15 @@ app.get('/categories', async (req, res) => {
         res.status(500).send('Server error');
     }
 });
+
+if (process.env.NODE_ENV === 'production') {
+    // Set static folder
+    app.use(express.static(path.join(__dirname, '../baby-shower-clothes-registration/build')));
+
+    app.get('*', (req, res) => {
+        res.sendFile(path.join(__dirname, '../baby-shower-clothes-registration/build', 'index.html'));
+    });
+}
 
 
 app.listen(PORT, () => {
